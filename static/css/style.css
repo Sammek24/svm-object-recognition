@@ -1,0 +1,51 @@
+/* Custom animations and glowing elements for SVM VisionLab */
+
+@keyframes pulseGlow {
+    0%, 100% {
+        opacity: 0.4;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.05);
+    }
+}
+
+.glow-ambient {
+    animation: pulseGlow 6s ease-in-out infinite;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #020617;
+}
+::-webkit-scrollbar-thumb {
+    background: #1e293b;
+    border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #334155;
+}
+
+/* Smooth transitions */
+button, input, select, canvas {
+    transition: all 0.15s ease-in-out;
+}
+
+/* Preset gallery item hover */
+.preset-card {
+    transition: transform 0.2s, border-color 0.2s;
+}
+.preset-card:hover {
+    transform: translateY(-2px);
+    border-color: #38bdf8;
+}
+
+/* Canvas styling */
+#paintCanvas {
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+}
