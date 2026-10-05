@@ -10,4 +10,7 @@ venv/
 data/
 quickdraw_data/
 *.npy
+*.pdf
+svm_visualizations/
+make_pdf_report.py
 .DS_Store
