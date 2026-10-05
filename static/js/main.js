@@ -1,6 +1,6 @@
 /**
- * SVM VisionLab - Clean User Interface Controller
- * 380x380 Canvas, Dedicated Detect Button, Essential Results Display.
+ * SVM Object Recognition - Clean & Simple UI Controller
+ * 380x380 Canvas, Dedicated Classify Button, Essential Results Display.
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -70,7 +70,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function stopDraw() {
-        // Stop drawing without auto-triggering prediction!
         isDrawing = false;
     }
 
@@ -105,22 +104,22 @@ document.addEventListener("DOMContentLoaded", () => {
     function setInputMode(mode) {
         currentSourceMode = (mode === "upload") ? "upload" : "canvas";
         [tabDraw, tabPresets, tabUpload].forEach(t => {
-            t.classList.remove("text-brand-400", "border-b-2", "border-brand-400");
-            t.classList.add("text-slate-400");
+            t.classList.remove("text-blue-600", "border-b-2", "border-blue-600");
+            t.classList.add("text-slate-500");
         });
         [panelDraw, panelPresets, panelUpload].forEach(p => p.classList.add("hidden"));
 
         if (mode === "draw") {
-            tabDraw.classList.add("text-brand-400", "border-b-2", "border-brand-400");
-            tabDraw.classList.remove("text-slate-400");
+            tabDraw.classList.add("text-blue-600", "border-b-2", "border-blue-600");
+            tabDraw.classList.remove("text-slate-500");
             panelDraw.classList.remove("hidden");
         } else if (mode === "presets") {
-            tabPresets.classList.add("text-brand-400", "border-b-2", "border-brand-400");
-            tabPresets.classList.remove("text-slate-400");
+            tabPresets.classList.add("text-blue-600", "border-b-2", "border-blue-600");
+            tabPresets.classList.remove("text-slate-500");
             panelPresets.classList.remove("hidden");
         } else if (mode === "upload") {
-            tabUpload.classList.add("text-brand-400", "border-b-2", "border-brand-400");
-            tabUpload.classList.remove("text-slate-400");
+            tabUpload.classList.add("text-blue-600", "border-b-2", "border-blue-600");
+            tabUpload.classList.remove("text-slate-500");
             panelUpload.classList.remove("hidden");
         }
     }
@@ -203,14 +202,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const b64 = tempCanvas.toDataURL("image/png");
 
         const div = document.createElement("div");
-        div.className = "cursor-pointer p-2 rounded-xl bg-slate-950 border border-slate-800 text-center hover:border-brand-400 transition";
+        div.className = "cursor-pointer p-2 rounded-lg bg-slate-50 border border-slate-200 text-center hover:border-blue-500 hover:bg-blue-50/50 transition";
         div.innerHTML = `
-            <img src="${b64}" class="w-12 h-12 mx-auto rounded-lg mb-1 object-contain">
-            <span class="text-[11px] text-slate-300 font-semibold block truncate">${item.label}</span>
+            <img src="${b64}" class="w-12 h-12 mx-auto rounded mb-1 object-contain">
+            <span class="text-[11px] text-slate-700 font-medium block truncate">${item.label}</span>
         `;
         div.addEventListener("click", () => {
             drawPresetToCanvas(ctx, item, canvas.width, canvas.height);
-            // Switch back to drawing tab so user can see it
             setInputMode("draw");
         });
         return div;
@@ -238,14 +236,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     dropzone.addEventListener("dragover", (e) => {
         e.preventDefault();
-        dropzone.classList.add("border-brand-400");
+        dropzone.classList.add("border-blue-500", "bg-blue-50/50");
     });
     dropzone.addEventListener("dragleave", () => {
-        dropzone.classList.remove("border-brand-400");
+        dropzone.classList.remove("border-blue-500", "bg-blue-50/50");
     });
     dropzone.addEventListener("drop", (e) => {
         e.preventDefault();
-        dropzone.classList.remove("border-brand-400");
+        dropzone.classList.remove("border-blue-500", "bg-blue-50/50");
         if (e.dataTransfer.files && e.dataTransfer.files[0]) {
             handleFileUpload(e.dataTransfer.files[0]);
         }
@@ -270,13 +268,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // -------------------------------------------------------------
-    // 5. Detect Object Button Trigger
+    // 5. Classify Object Button Trigger
     // -------------------------------------------------------------
     async function triggerDetection() {
         const imageBase64 = canvas.toDataURL("image/png");
 
         detectBtn.disabled = true;
-        detectBtn.innerHTML = `<i data-lucide="loader" class="w-5 h-5 animate-spin"></i> Detecting & Classifying...`;
+        detectBtn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Classifying...`;
         if (window.lucide) lucide.createIcons();
 
         try {
@@ -297,7 +295,7 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error(err);
         } finally {
             detectBtn.disabled = false;
-            detectBtn.innerHTML = `<i data-lucide="scan" class="w-5 h-5"></i> Detect Object / Classify`;
+            detectBtn.innerHTML = `<i data-lucide="scan" class="w-4 h-4"></i> Classify Object`;
             if (window.lucide) lucide.createIcons();
         }
     }
@@ -338,12 +336,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 const div = document.createElement("div");
                 div.className = "space-y-1";
                 div.innerHTML = `
-                    <div class="flex justify-between text-xs font-semibold ${isTop ? 'text-emerald-300 font-bold' : 'text-slate-400'}">
+                    <div class="flex justify-between text-xs ${isTop ? 'text-slate-900 font-bold' : 'text-slate-600 font-medium'}">
                         <span>${item.label}</span>
-                        <span class="font-mono ${isTop ? 'text-emerald-400' : 'text-slate-400'}">${item.prob}%</span>
+                        <span class="font-mono ${isTop ? 'text-blue-600 font-bold' : 'text-slate-500'}">${item.prob}%</span>
                     </div>
-                    <div class="w-full bg-slate-950 rounded-full h-2 overflow-hidden border border-slate-800">
-                        <div class="h-full rounded-full transition-all duration-300 ${isTop ? 'bg-emerald-400' : 'bg-slate-700'}" style="width: ${Math.max(4, item.prob)}%"></div>
+                    <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200">
+                        <div class="h-full rounded-full transition-all duration-300 ${isTop ? 'bg-blue-600' : 'bg-slate-400'}" style="width: ${Math.max(4, item.prob)}%"></div>
                     </div>
                 `;
                 candidatesContainer.appendChild(div);
