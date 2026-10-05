@@ -5,7 +5,8 @@ Combines Multi-Scale HOG, Spatial Density Transforms,
 and Ultra-Lightweight Visual Feature Embeddings (OpenCV DNN)
 into an Optimized Support Vector Machine.
 
-Memory Footprint: < 80MB (Fully compatible with Render Free Tier)
+Supports 62+ Sketch/Drawing Categories (Fruits, Cars, Objects, Characters)
+and 1,000 Real-World Photographic Categories with ImageNet RGB Normalization.
 """
 
 import os
@@ -58,7 +59,6 @@ class SVMVisionEngine:
 
         if os.path.exists(self.onnx_model_path):
             self.net = cv2.dnn.readNetFromONNX(self.onnx_model_path)
-            # Use CPU backend
             self.net.setPreferableBackend(cv2.dnn.DNN_BACKEND_OPENCV)
             self.net.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
             print("[INFO] OpenCV DNN Backbone loaded successfully.")
@@ -70,12 +70,123 @@ class SVMVisionEngine:
         img = np.zeros((size, size), dtype=np.uint8)
         cx, cy = size // 2, size // 2
 
+        # 1. Living & Structural Figures
         if name == "Human / Person":
             cv2.circle(img, (cx, cy - 14), 6, 255, -1)
             cv2.line(img, (cx, cy - 8), (cx, cy + 8), 255, 3)
             cv2.line(img, (cx - 10, cy - 2), (cx + 10, cy - 2), 255, 2)
             cv2.line(img, (cx, cy + 8), (cx - 8, cy + 18), 255, 2)
             cv2.line(img, (cx, cy + 8), (cx + 8, cy + 18), 255, 2)
+        elif name == "Tree":
+            cv2.rectangle(img, (cx - 3, cy + 4), (cx + 3, cy + 20), 255, -1)
+            cv2.circle(img, (cx, cy - 6), 14, 255, -1)
+        elif name == "House":
+            cv2.rectangle(img, (cx - 14, cy - 2), (cx + 14, cy + 16), 255, 2)
+            roof = np.array([[cx, cy - 18], [cx - 18, cy - 2], [cx + 18, cy - 2]], np.int32)
+            cv2.polylines(img, [roof], True, 255, 2)
+        elif name == "Sun":
+            cv2.circle(img, (cx, cy), 8, 255, -1)
+            for ang in np.linspace(0, 2*np.pi, 8, endpoint=False):
+                x1 = int(cx + 10 * np.cos(ang))
+                y1 = int(cy + 10 * np.sin(ang))
+                x2 = int(cx + 16 * np.cos(ang))
+                y2 = int(cy + 16 * np.sin(ang))
+                cv2.line(img, (x1, y1), (x2, y2), 255, 2)
+        elif name == "Moon":
+            cv2.circle(img, (cx, cy), 14, 255, -1)
+            cv2.circle(img, (cx + 6, cy - 4), 11, 0, -1)
+        elif name == "Flower":
+            cv2.circle(img, (cx, cy), 5, 255, -1)
+            for ang in np.linspace(0, 2*np.pi, 6, endpoint=False):
+                px = int(cx + 10 * np.cos(ang))
+                py = int(cy + 10 * np.sin(ang))
+                cv2.circle(img, (px, py), 5, 255, -1)
+            cv2.line(img, (cx, cy + 6), (cx, cy + 20), 255, 2)
+
+        # 2. Fruits & Food
+        elif name == "Apple":
+            cv2.circle(img, (cx - 6, cy + 2), 11, 255, -1)
+            cv2.circle(img, (cx + 6, cy + 2), 11, 255, -1)
+            cv2.circle(img, (cx, cy + 7), 10, 255, -1)
+            cv2.line(img, (cx, cy - 9), (cx + 2, cy - 18), 255, 2)
+            pts = np.array([[cx + 2, cy - 16], [cx + 9, cy - 20], [cx + 8, cy - 13]], np.int32)
+            cv2.fillPoly(img, [pts], 255)
+        elif name == "Banana":
+            cv2.ellipse(img, (cx, cy - 4), (18, 14), 45, 25, 205, 255, 6)
+            cv2.circle(img, (cx - 14, cy - 10), 2, 255, -1)
+            cv2.circle(img, (cx + 14, cy + 14), 2, 255, -1)
+        elif name == "Orange":
+            cv2.circle(img, (cx, cy + 2), 15, 255, -1)
+            cv2.line(img, (cx, cy - 13), (cx + 2, cy - 19), 255, 2)
+            pts = np.array([[cx + 2, cy - 17], [cx + 8, cy - 21], [cx + 7, cy - 15]], np.int32)
+            cv2.fillPoly(img, [pts], 255)
+        elif name == "Strawberry":
+            pts = np.array([[cx - 12, cy - 6], [cx + 12, cy - 6], [cx + 7, cy + 12], [cx, cy + 18], [cx - 7, cy + 12]], np.int32)
+            cv2.fillPoly(img, [pts], 255)
+            leaf_pts = np.array([[cx - 14, cy - 7], [cx - 6, cy - 15], [cx, cy - 8], [cx + 6, cy - 15], [cx + 14, cy - 7]], np.int32)
+            cv2.fillPoly(img, [leaf_pts], 255)
+            cv2.line(img, (cx, cy - 8), (cx, cy - 17), 255, 2)
+        elif name == "Grapes":
+            for ox, oy in [(-8, -10), (0, -10), (8, -10), (-4, -2), (4, -2), (0, 6), (0, 13)]:
+                cv2.circle(img, (cx + ox, cy + oy), 5, 255, -1)
+            cv2.line(img, (cx, cy - 15), (cx + 4, cy - 21), 255, 2)
+
+        # 3. Cars & Vehicles
+        elif name == "Car":
+            # Sedan style
+            cv2.rectangle(img, (cx - 18, cy + 1), (cx + 18, cy + 11), 255, -1)
+            roof = np.array([[cx - 10, cy + 1], [cx - 6, cy - 7], [cx + 6, cy - 7], [cx + 10, cy + 1]], np.int32)
+            cv2.fillPoly(img, [roof], 255)
+            cv2.circle(img, (cx - 11, cy + 12), 4, 255, -1)
+            cv2.circle(img, (cx + 11, cy + 12), 4, 255, -1)
+        elif name == "Sports Car":
+            # Aerodynamic low-profile sports car
+            pts = np.array([[cx - 20, cy + 4], [cx - 14, cy - 1], [cx - 2, cy - 6], [cx + 10, cy - 4], [cx + 20, cy + 4], [cx + 18, cy + 10], [cx - 18, cy + 10]], np.int32)
+            cv2.fillPoly(img, [pts], 255)
+            cv2.circle(img, (cx - 12, cy + 11), 4, 255, -1)
+            cv2.circle(img, (cx + 12, cy + 11), 4, 255, -1)
+        elif name == "Truck":
+            cv2.rectangle(img, (cx - 18, cy - 8), (cx + 4, cy + 10), 255, -1)
+            cv2.rectangle(img, (cx + 4, cy - 2), (cx + 18, cy + 10), 255, -1)
+            cv2.circle(img, (cx - 12, cy + 12), 4, 255, -1)
+            cv2.circle(img, (cx - 2, cy + 12), 4, 255, -1)
+            cv2.circle(img, (cx + 12, cy + 12), 4, 255, -1)
+        elif name == "Airplane":
+            cv2.line(img, (cx - 18, cy), (cx + 18, cy), 255, 4)
+            cv2.line(img, (cx - 2, cy - 16), (cx - 2, cy + 16), 255, 3)
+            cv2.line(img, (cx - 16, cy - 8), (cx - 16, cy + 8), 255, 2)
+        elif name == "Bicycle":
+            cv2.circle(img, (cx - 12, cy + 6), 7, 255, 2)
+            cv2.circle(img, (cx + 12, cy + 6), 7, 255, 2)
+            cv2.line(img, (cx - 12, cy + 6), (cx, cy + 6), 255, 2)
+            cv2.line(img, (cx, cy + 6), (cx - 4, cy - 6), 255, 2)
+            cv2.line(img, (cx - 4, cy - 6), (cx + 10, cy - 6), 255, 2)
+            cv2.line(img, (cx + 10, cy - 6), (cx + 12, cy + 6), 255, 2)
+
+        # 4. Common Everyday Objects & Animals
+        elif name == "Fish":
+            cv2.ellipse(img, (cx, cy), (14, 8), 0, 0, 360, 255, -1)
+            tail = np.array([[cx - 12, cy], [cx - 20, cy - 9], [cx - 20, cy + 9]], np.int32)
+            cv2.fillPoly(img, [tail], 255)
+            cv2.circle(img, (cx + 8, cy - 2), 2, 0, -1)
+        elif name == "Bird":
+            cv2.ellipse(img, (cx, cy), (12, 7), 20, 0, 360, 255, -1)
+            wing = np.array([[cx - 2, cy - 2], [cx + 6, cy - 14], [cx + 10, cy - 2]], np.int32)
+            cv2.fillPoly(img, [wing], 255)
+            beak = np.array([[cx + 12, cy - 2], [cx + 18, cy], [cx + 12, cy + 2]], np.int32)
+            cv2.fillPoly(img, [beak], 255)
+        elif name == "Cup / Mug":
+            cv2.rectangle(img, (cx - 10, cy - 8), (cx + 8, cy + 12), 255, -1)
+            cv2.ellipse(img, (cx + 8, cy + 2), (6, 7), 0, 270, 90, 255, 2)
+        elif name == "Clock":
+            cv2.circle(img, (cx, cy), 16, 255, 2)
+            cv2.line(img, (cx, cy), (cx, cy - 10), 255, 2)
+            cv2.line(img, (cx, cy), (cx + 8, cy), 255, 2)
+        elif name == "Eye":
+            cv2.ellipse(img, (cx, cy), (18, 9), 0, 0, 360, 255, 2)
+            cv2.circle(img, (cx, cy), 5, 255, -1)
+
+        # 5. Geometric Shapes
         elif name == "Circle":
             cv2.circle(img, (cx, cy), 16, 255, 3)
         elif name == "Square":
@@ -95,26 +206,10 @@ class SVMVisionEngine:
             cv2.fillPoly(img, [pts], 255)
             cv2.circle(img, (cx - 7, cy - 8), 7, 255, -1)
             cv2.circle(img, (cx + 7, cy - 8), 8, 255, -1)
-        elif name == "Car":
-            cv2.rectangle(img, (cx - 16, cy), (cx + 16, cy + 10), 255, -1)
-            cv2.rectangle(img, (cx - 8, cy - 8), (cx + 8, cy), 255, -1)
-            cv2.circle(img, (cx - 10, cy + 11), 4, 255, -1)
-            cv2.circle(img, (cx + 10, cy + 11), 4, 255, -1)
-        elif name == "Tree":
-            cv2.rectangle(img, (cx - 3, cy + 2), (cx + 3, cy + 18), 255, -1)
-            cv2.circle(img, (cx, cy - 6), 14, 255, -1)
-        elif name == "House":
-            cv2.rectangle(img, (cx - 14, cy - 2), (cx + 14, cy + 16), 255, 2)
-            roof = np.array([[cx, cy - 18], [cx - 18, cy - 2], [cx + 18, cy - 2]], np.int32)
-            cv2.polylines(img, [roof], True, 255, 2)
-        elif name == "Sun":
-            cv2.circle(img, (cx, cy), 8, 255, -1)
-            for ang in np.linspace(0, 2*np.pi, 8, endpoint=False):
-                x1 = int(cx + 10 * np.cos(ang))
-                y1 = int(cy + 10 * np.sin(ang))
-                x2 = int(cx + 16 * np.cos(ang))
-                y2 = int(cy + 16 * np.sin(ang))
-                cv2.line(img, (x1, y1), (x2, y2), 255, 2)
+        elif name == "Diamond":
+            pts = np.array([[cx, cy - 16], [cx + 14, cy], [cx, cy + 16], [cx - 14, cy]], np.int32)
+            cv2.polylines(img, [pts], True, 255, 3)
+
         return img
 
     def _draw_char(self, text, font=cv2.FONT_HERSHEY_SIMPLEX, thickness=2, size=48):
@@ -202,10 +297,18 @@ class SVMVisionEngine:
         return cv2.dilate(canvas, np.ones((2, 2), np.uint8), iterations=1)
 
     def _train_ensemble_svm(self):
-        """Train SVM on visual objects, shapes, digits, and letters."""
+        """Train SVM on 62+ visual objects, fruits, vehicles, digits, and letters."""
         self.shape_names = [
-            "Human / Person", "Circle", "Triangle", "Square", "Star", 
-            "Heart", "Car", "Tree", "House", "Sun"
+            # Figures & Structures
+            "Human / Person", "Tree", "House", "Sun", "Moon", "Flower",
+            # Fruits & Food
+            "Apple", "Banana", "Orange", "Strawberry", "Grapes",
+            # Vehicles
+            "Car", "Sports Car", "Truck", "Airplane", "Bicycle",
+            # Animals & Everyday Objects
+            "Fish", "Bird", "Cup / Mug", "Clock", "Eye",
+            # Geometries
+            "Circle", "Triangle", "Square", "Star", "Heart", "Diamond"
         ]
         self.digit_names = [f"Digit '{i}'" for i in range(10)]
         self.letter_names = [f"Letter '{chr(i)}'" for i in range(ord('A'), ord('Z') + 1)]
@@ -213,7 +316,7 @@ class SVMVisionEngine:
         self.class_names = self.shape_names + self.digit_names + self.letter_names
         X_train, y_train = [], []
 
-        # 1. Shapes/Objects
+        # 1. Shapes, Fruits, Vehicles & Objects
         for s_idx, s_name in enumerate(self.shape_names):
             base = self._draw_template(s_name)
             for ang in [-18, -10, 0, 10, 18]:
@@ -263,6 +366,43 @@ class SVMVisionEngine:
         self.svm.fit(np.array(X_train), np.array(y_train))
         print(f"[INFO] High-Precision Ensemble SVM trained on {len(X_train)} samples across {len(self.class_names)} categories.")
 
+    def _normalize_imagenet_label(self, raw_label):
+        """Maps technical ImageNet subspecies to user-friendly names."""
+        clean = raw_label.replace('_', ' ').title()
+        lower = clean.lower()
+
+        # Human detection
+        human_keywords = ["person", "human", "man", "woman", "boy", "girl", "groom", "bride", "suit", "trench coat", "scuba diver"]
+        if any(k in lower for k in human_keywords):
+            return "Human / Person"
+
+        # Cars & Automobiles
+        car_keywords = ["sports car", "convertible", "limousine", "minivan", "cab", "beach wagon", "passenger car", "race car", "jeep", "model t"]
+        if any(k in lower for k in car_keywords):
+            return f"Car ({clean})"
+
+        # Fruits
+        if "granny smith" in lower:
+            return "Apple (Granny Smith)"
+        elif "banana" in lower:
+            return "Banana"
+        elif "orange" in lower:
+            return "Orange"
+        elif "lemon" in lower:
+            return "Lemon"
+        elif "strawberry" in lower:
+            return "Strawberry"
+        elif "pineapple" in lower:
+            return "Pineapple"
+        elif "pomegranate" in lower:
+            return "Pomegranate"
+        elif "custard apple" in lower:
+            return "Custard Apple"
+        elif "fig" in lower:
+            return "Fig"
+
+        return clean
+
     def predict_image(self, img_array, source="canvas"):
         """Classify drawing or real photograph with SVM / Vision Backbone."""
         if len(img_array.shape) == 2:
@@ -277,7 +417,7 @@ class SVMVisionEngine:
             return {
                 "predicted_class": "Canvas is Blank",
                 "confidence": 0.0,
-                "explanation": "Please draw something or upload an image, then click Detect Object.",
+                "explanation": "Please draw something or upload an image, then click Classify Object.",
                 "top_candidates": []
             }
 
@@ -302,43 +442,36 @@ class SVMVisionEngine:
             explanation = f"Classified as '{pred_label}' ({confidence}% certainty) using Support Vector Machine."
 
         else:
-            # REAL PHOTO CLASSIFIER (OpenCV DNN MobileNet / SVM fallback)
+            # REAL PHOTO CLASSIFIER (OpenCV DNN MobileNet with ImageNet RGB Normalization)
             if self.net is not None:
-                # Preprocess for MobileNet (224x224, normalized RGB)
-                blob = cv2.dnn.blobFromImage(
-                    img_bgr, 
-                    scalefactor=1.0 / 255.0, 
-                    size=(224, 224), 
-                    mean=(0.485, 0.456, 0.406), 
-                    swapRB=True, 
-                    crop=False
-                )
+                # Proper ImageNet RGB float normalization
+                img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB).astype(np.float32) / 255.0
+                img_resized = cv2.resize(img_rgb, (224, 224), interpolation=cv2.INTER_AREA)
+                
+                mean = np.array([0.485, 0.456, 0.406], dtype=np.float32)
+                std = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+                norm_img = (img_resized - mean) / std
+                blob = np.transpose(norm_img, (2, 0, 1))[np.newaxis, ...].astype(np.float32)
+
                 self.net.setInput(blob)
-                preds = self.net.forward()
+                preds = self.net.forward().flatten()
                 
-                # Flatten output and compute softmax
-                flat_preds = preds.flatten()
-                if len(flat_preds) == 1001:
-                    flat_preds = flat_preds[1:]  # strip background class if 1001
+                if len(preds) == 1001:
+                    preds = preds[1:]  # strip background class if 1001
                 
-                exp_preds = np.exp(flat_preds - np.max(flat_preds))
+                exp_preds = np.exp(preds - np.max(preds))
                 probs = exp_preds / np.sum(exp_preds)
 
                 top_indices = np.argsort(probs)[::-1][:3]
-                top_name = self.categories[top_indices[0]].replace('_', ' ').title()
+                top_name = self._normalize_imagenet_label(self.categories[top_indices[0]])
                 confidence = round(float(probs[top_indices[0]]) * 100, 1)
 
-                human_keywords = ["Person", "Human", "Man", "Woman", "Boy", "Girl", "Groom", "Bride", "Suit", "Trench Coat", "Scuba Diver"]
-                if any(k.lower() in top_name.lower() for k in human_keywords):
-                    pred_label = "Human / Person"
-                else:
-                    pred_label = top_name
-
                 top_candidates = [
-                    {"label": self.categories[i].replace('_', ' ').title(), "prob": round(float(probs[i]) * 100, 1)}
+                    {"label": self._normalize_imagenet_label(self.categories[i]), "prob": round(float(probs[i]) * 100, 1)}
                     for i in top_indices
                 ]
-                explanation = f"Identified '{pred_label}' ({confidence}% probability) using visual feature embeddings."
+                explanation = f"Identified '{top_name}' ({confidence}% probability) using visual feature embeddings."
+                pred_label = top_name
             else:
                 # Pure SVM fallback
                 normalized = self._crop_and_normalize(img_gray)

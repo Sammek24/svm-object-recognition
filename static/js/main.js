@@ -129,18 +129,26 @@ document.addEventListener("DOMContentLoaded", () => {
     tabUpload.addEventListener("click", () => setInputMode("upload"));
 
     // -------------------------------------------------------------
-    // 3. Preset Samples
+    // 3. Preset Samples (Fruits, Cars, Objects, Characters)
     // -------------------------------------------------------------
     const presetsGrid = document.getElementById("presets-grid");
     const samplePresets = [
-        { label: "👤 Human", type: "human" },
+        { label: "🍎 Apple", type: "apple" },
+        { label: "🍌 Banana", type: "banana" },
+        { label: "🍊 Orange", type: "orange" },
+        { label: "🍓 Strawberry", type: "strawberry" },
         { label: "🚗 Car", type: "car" },
-        { label: "🌳 Tree", type: "tree" },
+        { label: "🏎️ Sports Car", type: "sportscar" },
+        { label: "👤 Human", type: "human" },
         { label: "🏠 House", type: "house" },
+        { label: "🌳 Tree", type: "tree" },
+        { label: "✈️ Airplane", type: "airplane" },
+        { label: "🌸 Flower", type: "flower" },
+        { label: "🐟 Fish", type: "fish" },
+        { label: "⭐ Star", type: "star" },
+        { label: "❤️ Heart", type: "heart" },
         { label: "🔤 Letter 'A'", type: "char", val: "A" },
-        { label: "🔤 Letter 'B'", type: "char", val: "B" },
-        { label: "🔢 Number '7'", type: "char", val: "7" },
-        { label: "🔢 Number '3'", type: "char", val: "3" }
+        { label: "🔢 Number '7'", type: "char", val: "7" }
     ];
 
     function drawPresetToCanvas(tCtx, item, w, h) {
@@ -153,11 +161,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const scale = w / 380;
 
         if (item.type === "human") {
-            // Head
             tCtx.beginPath();
             tCtx.arc(cx, cy - 65*scale, 24*scale, 0, Math.PI * 2);
             tCtx.fill();
-            // Torso & Limbs
             tCtx.lineWidth = 12*scale;
             tCtx.beginPath();
             tCtx.moveTo(cx, cy - 40*scale); tCtx.lineTo(cx, cy + 30*scale);
@@ -165,17 +171,94 @@ document.addEventListener("DOMContentLoaded", () => {
             tCtx.moveTo(cx, cy + 30*scale); tCtx.lineTo(cx - 35*scale, cy + 95*scale);
             tCtx.moveTo(cx, cy + 30*scale); tCtx.lineTo(cx + 35*scale, cy + 95*scale);
             tCtx.stroke();
-        } else if (item.type === "char") {
-            tCtx.font = `bold ${Math.round(w * 0.65)}px 'Inter', sans-serif`;
-            tCtx.textAlign = "center";
-            tCtx.textBaseline = "middle";
-            tCtx.fillText(item.val, cx, cy + (w > 100 ? 10 : 2));
-        } else if (item.type === "car") {
-            tCtx.fillRect(cx - 70*scale, cy + 5*scale, 140*scale, 50*scale);
-            tCtx.fillRect(cx - 35*scale, cy - 35*scale, 70*scale, 40*scale);
+        } else if (item.type === "apple") {
             tCtx.beginPath();
-            tCtx.arc(cx - 42*scale, cy + 58*scale, 20*scale, 0, Math.PI * 2);
-            tCtx.arc(cx + 42*scale, cy + 58*scale, 20*scale, 0, Math.PI * 2);
+            tCtx.arc(cx - 35*scale, cy + 10*scale, 65*scale, 0, Math.PI * 2);
+            tCtx.arc(cx + 35*scale, cy + 10*scale, 65*scale, 0, Math.PI * 2);
+            tCtx.fill();
+            tCtx.lineWidth = 10*scale;
+            tCtx.beginPath();
+            tCtx.moveTo(cx, cy - 50*scale); tCtx.lineTo(cx + 15*scale, cy - 100*scale);
+            tCtx.stroke();
+        } else if (item.type === "banana") {
+            tCtx.lineWidth = 28*scale;
+            tCtx.beginPath();
+            tCtx.arc(cx - 20*scale, cy, 90*scale, 0.2, 2.2);
+            tCtx.stroke();
+        } else if (item.type === "orange") {
+            tCtx.beginPath();
+            tCtx.arc(cx, cy + 10*scale, 85*scale, 0, Math.PI * 2);
+            tCtx.fill();
+            tCtx.lineWidth = 10*scale;
+            tCtx.beginPath();
+            tCtx.moveTo(cx, cy - 75*scale); tCtx.lineTo(cx + 20*scale, cy - 110*scale);
+            tCtx.stroke();
+        } else if (item.type === "strawberry") {
+            tCtx.beginPath();
+            tCtx.moveTo(cx - 70*scale, cy - 30*scale);
+            tCtx.lineTo(cx + 70*scale, cy - 30*scale);
+            tCtx.lineTo(cx + 40*scale, cy + 60*scale);
+            tCtx.lineTo(cx, cy + 95*scale);
+            tCtx.lineTo(cx - 40*scale, cy + 60*scale);
+            tCtx.closePath();
+            tCtx.fill();
+        } else if (item.type === "car") {
+            tCtx.fillRect(cx - 100*scale, cy + 10*scale, 200*scale, 60*scale);
+            tCtx.beginPath();
+            tCtx.moveTo(cx - 60*scale, cy + 10*scale);
+            tCtx.lineTo(cx - 35*scale, cy - 40*scale);
+            tCtx.lineTo(cx + 35*scale, cy - 40*scale);
+            tCtx.lineTo(cx + 60*scale, cy + 10*scale);
+            tCtx.closePath();
+            tCtx.fill();
+            tCtx.beginPath();
+            tCtx.arc(cx - 60*scale, cy + 70*scale, 24*scale, 0, Math.PI * 2);
+            tCtx.arc(cx + 60*scale, cy + 70*scale, 24*scale, 0, Math.PI * 2);
+            tCtx.fill();
+        } else if (item.type === "sportscar") {
+            tCtx.beginPath();
+            tCtx.moveTo(cx - 110*scale, cy + 25*scale);
+            tCtx.lineTo(cx - 70*scale, cy - 5*scale);
+            tCtx.lineTo(cx - 10*scale, cy - 35*scale);
+            tCtx.lineTo(cx + 60*scale, cy - 20*scale);
+            tCtx.lineTo(cx + 110*scale, cy + 25*scale);
+            tCtx.lineTo(cx + 100*scale, cy + 55*scale);
+            tCtx.lineTo(cx - 100*scale, cy + 55*scale);
+            tCtx.closePath();
+            tCtx.fill();
+            tCtx.beginPath();
+            tCtx.arc(cx - 65*scale, cy + 60*scale, 22*scale, 0, Math.PI * 2);
+            tCtx.arc(cx + 65*scale, cy + 60*scale, 22*scale, 0, Math.PI * 2);
+            tCtx.fill();
+        } else if (item.type === "airplane") {
+            tCtx.lineWidth = 16*scale;
+            tCtx.beginPath();
+            tCtx.moveTo(cx - 90*scale, cy); tCtx.lineTo(cx + 90*scale, cy);
+            tCtx.moveTo(cx, cy - 80*scale); tCtx.lineTo(cx, cy + 80*scale);
+            tCtx.moveTo(cx - 80*scale, cy - 35*scale); tCtx.lineTo(cx - 80*scale, cy + 35*scale);
+            tCtx.stroke();
+        } else if (item.type === "flower") {
+            tCtx.beginPath();
+            tCtx.arc(cx, cy - 20*scale, 25*scale, 0, Math.PI * 2);
+            tCtx.fill();
+            for (let a = 0; a < Math.PI * 2; a += Math.PI / 3) {
+                tCtx.beginPath();
+                tCtx.arc(cx + Math.cos(a)*50*scale, cy - 20*scale + Math.sin(a)*50*scale, 22*scale, 0, Math.PI * 2);
+                tCtx.fill();
+            }
+            tCtx.lineWidth = 10*scale;
+            tCtx.beginPath();
+            tCtx.moveTo(cx, cy + 5*scale); tCtx.lineTo(cx, cy + 90*scale);
+            tCtx.stroke();
+        } else if (item.type === "fish") {
+            tCtx.beginPath();
+            tCtx.ellipse(cx, cy, 70*scale, 40*scale, 0, 0, Math.PI * 2);
+            tCtx.fill();
+            tCtx.beginPath();
+            tCtx.moveTo(cx - 60*scale, cy);
+            tCtx.lineTo(cx - 100*scale, cy - 40*scale);
+            tCtx.lineTo(cx - 100*scale, cy + 40*scale);
+            tCtx.closePath();
             tCtx.fill();
         } else if (item.type === "tree") {
             tCtx.fillRect(cx - 14*scale, cy + 15*scale, 28*scale, 85*scale);
@@ -190,6 +273,29 @@ document.addEventListener("DOMContentLoaded", () => {
             tCtx.lineTo(cx + 75*scale, cy - 15*scale);
             tCtx.closePath();
             tCtx.fill();
+        } else if (item.type === "star") {
+            tCtx.beginPath();
+            for (let i = 0; i < 10; i++) {
+                const r = (i % 2 === 0 ? 80 : 35) * scale;
+                const a = i * Math.PI / 5 - Math.PI / 2;
+                const px = cx + r * Math.cos(a);
+                const py = cy + r * Math.sin(a);
+                if (i === 0) tCtx.moveTo(px, py);
+                else tCtx.lineTo(px, py);
+            }
+            tCtx.closePath();
+            tCtx.fill();
+        } else if (item.type === "heart") {
+            tCtx.beginPath();
+            tCtx.moveTo(cx, cy + 70*scale);
+            tCtx.bezierCurveTo(cx - 90*scale, cy, cx - 70*scale, cy - 70*scale, cx, cy - 20*scale);
+            tCtx.bezierCurveTo(cx + 70*scale, cy - 70*scale, cx + 90*scale, cy, cx, cy + 70*scale);
+            tCtx.fill();
+        } else if (item.type === "char") {
+            tCtx.font = `bold ${Math.round(w * 0.65)}px 'Inter', sans-serif`;
+            tCtx.textAlign = "center";
+            tCtx.textBaseline = "middle";
+            tCtx.fillText(item.val, cx, cy + (w > 100 ? 10 : 2));
         }
     }
 
@@ -204,7 +310,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const div = document.createElement("div");
         div.className = "cursor-pointer p-2 rounded-lg bg-slate-50 border border-slate-200 text-center hover:border-blue-500 hover:bg-blue-50/50 transition";
         div.innerHTML = `
-            <img src="${b64}" class="w-12 h-12 mx-auto rounded mb-1 object-contain">
+            <img src="${b64}" class="w-10 h-10 mx-auto rounded mb-1 object-contain">
             <span class="text-[11px] text-slate-700 font-medium block truncate">${item.label}</span>
         `;
         div.addEventListener("click", () => {
@@ -312,14 +418,38 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Choose appropriate icon
         const clsLower = res.predicted_class.toLowerCase();
-        if (clsLower.includes("human") || clsLower.includes("person") || clsLower.includes("man") || clsLower.includes("woman")) {
-            predIcon.textContent = "👤";
+        if (clsLower.includes("apple")) {
+            predIcon.textContent = "🍎";
+        } else if (clsLower.includes("banana")) {
+            predIcon.textContent = "🍌";
+        } else if (clsLower.includes("orange") || clsLower.includes("citrus") || clsLower.includes("lemon")) {
+            predIcon.textContent = "🍊";
+        } else if (clsLower.includes("strawberry")) {
+            predIcon.textContent = "🍓";
+        } else if (clsLower.includes("grape")) {
+            predIcon.textContent = "🍇";
         } else if (clsLower.includes("car") || clsLower.includes("automobile")) {
             predIcon.textContent = "🚗";
+        } else if (clsLower.includes("truck") || clsLower.includes("pickup")) {
+            predIcon.textContent = "🚚";
+        } else if (clsLower.includes("plane") || clsLower.includes("airplane")) {
+            predIcon.textContent = "✈️";
+        } else if (clsLower.includes("bike") || clsLower.includes("bicycle")) {
+            predIcon.textContent = "🚲";
+        } else if (clsLower.includes("human") || clsLower.includes("person") || clsLower.includes("man") || clsLower.includes("woman")) {
+            predIcon.textContent = "👤";
         } else if (clsLower.includes("tree")) {
             predIcon.textContent = "🌳";
+        } else if (clsLower.includes("flower")) {
+            predIcon.textContent = "🌸";
+        } else if (clsLower.includes("fish")) {
+            predIcon.textContent = "🐟";
         } else if (clsLower.includes("house")) {
             predIcon.textContent = "🏠";
+        } else if (clsLower.includes("star")) {
+            predIcon.textContent = "⭐";
+        } else if (clsLower.includes("heart")) {
+            predIcon.textContent = "❤️";
         } else if (clsLower.includes("letter") || clsLower.includes("digit")) {
             predIcon.textContent = res.predicted_class.slice(-1);
         } else {
