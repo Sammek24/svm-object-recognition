@@ -11,6 +11,8 @@ data/
 quickdraw_data/
 *.npy
 *.pdf
+*.docx
 svm_visualizations/
 make_pdf_report.py
+make_docx_report.py
 .DS_Store
